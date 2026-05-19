@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnvioService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Vega Post-Contenido 2 U11</a> &gt; <a href="index.source.html" class="el_package">com.vega.post2u11.service</a> &gt; <span class="el_source">EnvioService.java</span></div><h1>EnvioService.java</h1><pre class="source lang-java linenums">package com.vega.post2u11.service;
+
+import com.vega.post2u11.model.Cliente;
+import com.vega.post2u11.model.Pedido;
+import org.springframework.stereotype.Service;
+
+@Service
+<span class="fc" id="L8">public class EnvioService {</span>
+
+    public double calcularEnvio(Pedido pedido, String tipoEnvio) {
+<span class="fc bfc" id="L11" title="All 5 branches covered.">        switch (tipoEnvio) {</span>
+            case &quot;ESTANDAR&quot;:
+<span class="fc bfc" id="L13" title="All 2 branches covered.">                return pedido.getTotal() &gt; 50 ? 0 : 5.99;</span>
+            case &quot;EXPRESS&quot;:
+<span class="fc" id="L15">                return 12.99;</span>
+            case &quot;MISMO_DIA&quot;:
+<span class="fc" id="L17">                return 24.99;</span>
+            case &quot;GRATIS&quot;:
+<span class="fc" id="L19">                return 0;</span>
+            default:
+<span class="fc" id="L21">                throw new IllegalArgumentException(&quot;Tipo de envio desconocido: &quot; + tipoEnvio);</span>
+        }
+    }
+
+    public String aprobarCredito(Cliente c, double monto) {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (c != null) {</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">            if (c.isActivo()) {</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">                if (c.getScore() &gt;= 600) {</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">                    if (monto &gt; 0) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">                        if (monto &lt;= c.getLimiteCredito()) {</span>
+<span class="fc" id="L31">                            return &quot;APROBADO&quot;;</span>
+                        }
+                    }
+                }
+            }
+        }
+<span class="fc" id="L37">        return &quot;RECHAZADO&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

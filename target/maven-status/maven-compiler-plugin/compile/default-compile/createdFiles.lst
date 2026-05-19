@@ -1,0 +1,4 @@
+com\vega\post2u11\Post2U11Application.class
+com\vega\post2u11\model\Pedido.class
+com\vega\post2u11\service\EnvioService.class
+com\vega\post2u11\model\Cliente.class

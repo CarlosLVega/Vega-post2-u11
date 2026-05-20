@@ -1,7 +1,7 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 Vega Post-Contenido 2 U11,com.vega.post2u11.model,Pedido,0,10,0,0,0,4,0,3,0,3
 Vega Post-Contenido 2 U11,com.vega.post2u11.model,Cliente,0,24,0,0,0,10,0,7,0,7
-Vega Post-Contenido 2 U11,com.vega.post2u11.service,EnvioService,0,67,0,10,0,15,0,10,0,5
+Vega Post-Contenido 2 U11,com.vega.post2u11.service,EnvioService,0,75,0,10,0,14,0,10,0,5
 Vega Post-Contenido 2 U11,com.vega.post2u11.strategy,EnvioGratis,0,5,0,0,0,2,0,2,0,2
 Vega Post-Contenido 2 U11,com.vega.post2u11.strategy,EnvioEstandar,0,12,0,2,0,2,0,3,0,2
 Vega Post-Contenido 2 U11,com.vega.post2u11.strategy,EnvioMismoDia,0,5,0,0,0,2,0,2,0,2

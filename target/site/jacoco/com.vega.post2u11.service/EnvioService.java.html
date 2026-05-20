@@ -39,18 +39,12 @@ public class EnvioService {
     }
 
     public String aprobarCredito(Cliente c, double monto) {
-<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (c != null) {</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">            if (c.isActivo()) {</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">                if (c.getScore() &gt;= 600) {</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">                    if (monto &gt; 0) {</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">                        if (monto &lt;= c.getLimiteCredito()) {</span>
-<span class="fc" id="L47">                            return &quot;APROBADO&quot;;</span>
-                        }
-                    }
-                }
-            }
-        }
-<span class="fc" id="L53">        return &quot;RECHAZADO&quot;;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (c == null) return &quot;RECHAZADO&quot;;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (!c.isActivo()) return &quot;RECHAZADO&quot;;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (c.getScore() &lt; 600) return &quot;RECHAZADO&quot;;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (monto &lt;= 0) return &quot;RECHAZADO&quot;;</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (monto &gt; c.getLimiteCredito()) return &quot;RECHAZADO&quot;;</span>
+<span class="fc" id="L47">        return &quot;APROBADO&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

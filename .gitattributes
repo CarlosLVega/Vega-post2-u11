@@ -1,0 +1,3 @@
+target/** linguist-vendored
+captures/** linguist-documentation
+*.java linguist-language=Java

@@ -1,0 +1,284 @@
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Patrones de Diseno de Software 
+Unidad 11: Refactorizacion 
+Avanzada y Clean Code Profundo 
+Post-Contenido 2 
+Ingenieria de Sistemas 
+2026 
+  
+ 
+Objetivo de la Actividad 
+El estudiante refactoriza condicionales complejos de alta CC aplicando Replace 
+Conditional with Polymorphism y Guard Clauses, verifica con SonarQube que la 
+complejidad disminuye y que el Quality Gate del proyecto se mantiene en estado 
+Passed, y documenta el proceso con evidencia comparativa. 
+ 
+Prerrequisitos 
+● Haber completado el Post-Contenido 1 (el mismo proyecto base puede reutilizarse). 
+● SonarQube corriendo en Docker con el mismo token del Post-Contenido 1. 
+● Comprension del patron Strategy y del principio Open/Closed. 
+● JUnit 5 configurado en el proyecto para escribir pruebas antes de refactorizar. 
+Laboratorio 
+Paso 1 — Agregar codigo con Switch Statement smell y arrow code 
+Agregar los siguientes metodos al proyecto existente. Representan condicionales tipicos 
+con alta CC: 
+ 
+// Switch Statement smell — CC = 5 
+public double calcularEnvio(Pedido pedido, String tipoEnvio) { 
+    switch (tipoEnvio) { 
+        case "ESTANDAR":  return pedido.getTotal() > 50 ? 0 : 5.99; 
+        case "EXPRESS":   return 12.99; 
+        case "MISMO_DIA": return 24.99; 
+        case "GRATIS":    return 0; 
+        default: throw new IllegalArgumentException( 
+            "Tipo de envio desconocido: " + tipoEnvio); 
+    } 
+} 
+ 
+// Arrow code — CC = 6 
+public String aprobarCredito(Cliente c, double monto) { 
+    if (c != null) { 
+        if (c.isActivo()) { 
+            if (c.getScore() >= 600) { 
+                if (monto > 0) { 
+                    if (monto <= c.getLimiteCredito()) { 
+                        return "APROBADO"; 
+                    } 
+                } 
+            } 
+        } 
+    } 
+    return "RECHAZADO"; 
+} 
+ 
+Ejecutar analisis inicial con SonarQube y registrar la CC de cada metodo. 
+Paso 2 — Escribir pruebas antes de refactorizar 
+ 
+Antes de cualquier cambio estructural, se escriben pruebas que documentan el 
+comportamiento actual: 
+@Test 
+void calcularEnvio_estandar_conTotalAlto_debeSerGratis() { 
+    Pedido p = new Pedido(); p.setTotal(60.0); 
+    assertEquals(0.0, service.calcularEnvio(p, "ESTANDAR"), 0.001); 
+} 
+ 
+@Test 
+void aprobarCredito_clienteNulo_debeRechazar() { 
+    assertEquals("RECHAZADO", service.aprobarCredito(null, 1000)); 
+} 
+ 
+Verificar que todas las pruebas pasan con mvn test. Estas pruebas son la red de seguridad 
+para la refactorizacion. 
+Paso 3 — Replace Conditional with Polymorphism en calcularEnvio 
+Crear la interfaz EstrategiaEnvio y sus implementaciones: 
+public interface EstrategiaEnvio { 
+    double calcularCosto(Pedido pedido); 
+} 
+ 
+@Component("ESTANDAR") 
+public class EnvioEstandar implements EstrategiaEnvio { 
+    public double calcularCosto(Pedido pedido) { 
+        return pedido.getTotal() > 50 ? 0.0 : 5.99; 
+    } 
+} 
+ 
+@Component("EXPRESS") 
+public class EnvioExpress implements EstrategiaEnvio { 
+    public double calcularCosto(Pedido pedido) { return 12.99; } 
+} 
+ 
+// Uso en el servicio — inyeccion de todas las estrategias 
+@Service 
+public class EnvioService { 
+    private final Map<String, EstrategiaEnvio> estrategias; 
+    public EnvioService(Map<String, EstrategiaEnvio> estrategias) { 
+        this.estrategias = estrategias; 
+    } 
+    public double calcularEnvio(Pedido pedido, String tipo) { 
+        return Optional.ofNullable(estrategias.get(tipo)) 
+            .orElseThrow(() -> new IllegalArgumentException(tipo)) 
+            .calcularCosto(pedido); 
+    } 
+} 
+Paso 4 — Guard Clauses en aprobarCredito 
+Reemplazar el arrow code con Guard Clauses que retornan "RECHAZADO" 
+anticipadamente: 
+public String aprobarCredito(Cliente c, double monto) { 
+ 
+    if (c == null)                       return "RECHAZADO"; 
+    if (!c.isActivo())                   return "RECHAZADO"; 
+    if (c.getScore() < 600)              return "RECHAZADO"; 
+    if (monto <= 0)                      return "RECHAZADO"; 
+    if (monto > c.getLimiteCredito())    return "RECHAZADO"; 
+    return "APROBADO"; 
+} 
+ 
+Verificar que todas las pruebas siguen pasando con mvn test. La CC de este metodo debe 
+bajar de 6 a 2. 
+Paso 5 — Segundo analisis y verificacion del Quality Gate 
+Ejecutar el segundo analisis con SonarQube y verificar en el dashboard: 
+● CC de calcularEnvio: de 5 a 1 (la logica esta distribuida en las implementaciones de 
+EstrategiaEnvio). 
+● CC de aprobarCredito: de 6 a 2. 
+● El Quality Gate debe mostrar estado Passed si la cobertura se mantiene >= 80%. 
+● Documentar en el README la tabla comparativa de metricas y una captura del Quality 
+Gate Passed. 
+● Agregar en el README una reflexion de 3-5 lineas sobre como el patron Strategy facilita 
+agregar nuevos tipos de envio sin modificar EnvioService (Open/Closed Principle). 
+ 
+Checkpoints de Verificacion 
+● La interfaz EstrategiaEnvio existe con al menos 3 implementaciones (Estandar, 
+Express, MismoDia). 
+● EnvioService usa inyeccion por constructor con Map<String, EstrategiaEnvio> de 
+Spring. 
+● El metodo aprobarCredito() tiene exactamente 6 lineas (5 guards + 1 return). 
+● Todas las pruebas del Paso 2 siguen pasando despues de la refactorizacion (sin 
+modificarlas). 
+● El segundo analisis de SonarQube muestra reduccion de CC en ambos metodos 
+refactorizados. 
+● El Quality Gate aparece como Passed en el dashboard de SonarQube. 
+● El repositorio tiene minimo 3 commits: pruebas base, refactorizacion polimorfismo, 
+refactorizacion guard clauses. 
+ 
+Rubrica de Evaluacion 
+Criterio Excelente (90-
+100%) 
+Bueno (70-89%) Aceptable (50-
+69%) 
+Insuficiente (0-
+49%) 
+Implementacion 
+(40%) 
+Aplica 
+correctamente las 
+tecnicas de 
+refactorizacion 
+indicadas; el 
+codigo resultante 
+Aplica la mayoria 
+de las tecnicas 
+correctamente; 
+hay algun detalle 
+menor 
+incorrecto. 
+Aplica las 
+tecnicas 
+parcialmente; el 
+resultado mejora 
+algo pero deja 
+smells sin 
+resolver. 
+No aplica las 
+tecnicas 
+correctamente o el 
+codigo resultante 
+no mejora 
+respecto al 
+original. 
+ 
+Criterio Excelente (90-
+100%) 
+Bueno (70-89%) Aceptable (50-
+69%) 
+Insuficiente (0-
+49%) 
+es mas legible y 
+tiene menor CC. 
+Funcionalidad 
+(25%) 
+Todas las 
+pruebas pasan 
+despues de la 
+refactorizacion; 
+no hay 
+regresiones. 
+La mayoria de 
+las pruebas 
+pasan; hay una 
+falla menor no 
+relacionada con 
+la 
+refactorizacion. 
+Algunas pruebas 
+fallan pero el 
+comportamiento 
+principal se 
+preserva. 
+La refactorizacion 
+rompe el 
+comportamiento; 
+las pruebas de 
+integracion fallan. 
+Documentacion 
+(20%) 
+README 
+documenta 
+claramente los 
+smells 
+encontrados, las 
+tecnicas 
+aplicadas y las 
+metricas 
+antes/despues 
+con capturas. 
+README 
+documenta los 
+cambios pero le 
+faltan algunas 
+capturas o 
+metricas 
+comparativas. 
+README 
+menciona los 
+cambios pero sin 
+detalle tecnico ni 
+evidencia de 
+mejora. 
+README ausente 
+o no describe los 
+cambios 
+realizados. 
+Estilo y 
+Convenciones 
+(15%) 
+Codigo sigue 
+convenciones 
+Java (camelCase, 
+nombres 
+descriptivos, sin 
+warnings de 
+SonarQube en el 
+codigo nuevo). 
+Codigo 
+generalmente 
+correcto con 
+algun nombre 
+poco descriptivo 
+o warning menor. 
+Algunas 
+convenciones 
+incumplidas; 
+nombres 
+confusos en 
+metodos 
+extraidos. 
+Codigo no sigue 
+convenciones; 
+nombres sin 
+sentido o estilos 
+inconsistentes. 
+ 
+Entregables 
+Elemento Especificacion 
+Repositorio GitHub publico con nombre apellido-post2-u11 
+Estructura README.md + src/ + capturas Quality Gate Passed de SonarQube 
+Commits Minimo 3 commits: pruebas base, polimorfismo, guard clauses 
+README Tabla comparativa de CC antes/despues, captura Quality Gate, reflexion 
+sobre Open/Closed 
+ 

@@ -2,3 +2,8 @@ C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\p
 C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\model\Pedido.java
 C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\Post2U11Application.java
 C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\service\EnvioService.java
+C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\strategy\EnvioEstandar.java
+C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\strategy\EnvioExpress.java
+C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\strategy\EnvioGratis.java
+C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\strategy\EnvioMismoDia.java
+C:\Users\carlo\OneDrive\Documents\GitHub\Vega-post2-u11\src\main\java\com\vega\post2u11\strategy\EstrategiaEnvio.java

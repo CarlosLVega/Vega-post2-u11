@@ -2,39 +2,55 @@
 
 import com.vega.post2u11.model.Cliente;
 import com.vega.post2u11.model.Pedido;
+import com.vega.post2u11.strategy.EnvioEstandar;
+import com.vega.post2u11.strategy.EnvioExpress;
+import com.vega.post2u11.strategy.EnvioGratis;
+import com.vega.post2u11.strategy.EnvioMismoDia;
+import com.vega.post2u11.strategy.EstrategiaEnvio;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.Optional;
+
 @Service
-<span class="fc" id="L8">public class EnvioService {</span>
+public class EnvioService {
+
+    private final Map&lt;String, EstrategiaEnvio&gt; estrategias;
+
+    @Autowired
+<span class="fc" id="L22">    public EnvioService(Map&lt;String, EstrategiaEnvio&gt; estrategias) {</span>
+<span class="fc" id="L23">        this.estrategias = estrategias;</span>
+<span class="fc" id="L24">    }</span>
+
+    EnvioService() {
+<span class="fc" id="L27">        this(Map.of(</span>
+                &quot;ESTANDAR&quot;, new EnvioEstandar(),
+                &quot;EXPRESS&quot;, new EnvioExpress(),
+                &quot;MISMO_DIA&quot;, new EnvioMismoDia(),
+                &quot;GRATIS&quot;, new EnvioGratis()
+        ));
+<span class="fc" id="L33">    }</span>
 
     public double calcularEnvio(Pedido pedido, String tipoEnvio) {
-<span class="fc bfc" id="L11" title="All 5 branches covered.">        switch (tipoEnvio) {</span>
-            case &quot;ESTANDAR&quot;:
-<span class="fc bfc" id="L13" title="All 2 branches covered.">                return pedido.getTotal() &gt; 50 ? 0 : 5.99;</span>
-            case &quot;EXPRESS&quot;:
-<span class="fc" id="L15">                return 12.99;</span>
-            case &quot;MISMO_DIA&quot;:
-<span class="fc" id="L17">                return 24.99;</span>
-            case &quot;GRATIS&quot;:
-<span class="fc" id="L19">                return 0;</span>
-            default:
-<span class="fc" id="L21">                throw new IllegalArgumentException(&quot;Tipo de envio desconocido: &quot; + tipoEnvio);</span>
-        }
+<span class="fc" id="L36">        return Optional.ofNullable(estrategias.get(tipoEnvio))</span>
+<span class="fc" id="L37">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Tipo de envio desconocido: &quot; + tipoEnvio))</span>
+<span class="fc" id="L38">                .calcularCosto(pedido);</span>
     }
 
     public String aprobarCredito(Cliente c, double monto) {
-<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (c != null) {</span>
-<span class="fc bfc" id="L27" title="All 2 branches covered.">            if (c.isActivo()) {</span>
-<span class="fc bfc" id="L28" title="All 2 branches covered.">                if (c.getScore() &gt;= 600) {</span>
-<span class="fc bfc" id="L29" title="All 2 branches covered.">                    if (monto &gt; 0) {</span>
-<span class="fc bfc" id="L30" title="All 2 branches covered.">                        if (monto &lt;= c.getLimiteCredito()) {</span>
-<span class="fc" id="L31">                            return &quot;APROBADO&quot;;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (c != null) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            if (c.isActivo()) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                if (c.getScore() &gt;= 600) {</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">                    if (monto &gt; 0) {</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">                        if (monto &lt;= c.getLimiteCredito()) {</span>
+<span class="fc" id="L47">                            return &quot;APROBADO&quot;;</span>
                         }
                     }
                 }
             }
         }
-<span class="fc" id="L37">        return &quot;RECHAZADO&quot;;</span>
+<span class="fc" id="L53">        return &quot;RECHAZADO&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
